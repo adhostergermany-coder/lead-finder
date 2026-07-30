@@ -39,11 +39,11 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
                 <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Name, address, phone..."
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" id="searchInput">
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <select name="filter_category" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select name="filter_category" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
                     <option value="">All Categories</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat }}" {{ ($filters['filter_category'] ?? '') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -52,7 +52,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Has Phone</label>
-                <select name="filter_phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select name="filter_phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
                     <option value="">Any</option>
                     <option value="yes" {{ ($filters['filter_phone'] ?? '') === 'yes' ? 'selected' : '' }}>Yes</option>
                     <option value="no" {{ ($filters['filter_phone'] ?? '') === 'no' ? 'selected' : '' }}>No</option>
@@ -60,7 +60,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Has Website</label>
-                <select name="filter_website" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select name="filter_website" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
                     <option value="">Any</option>
                     <option value="yes" {{ ($filters['filter_website'] ?? '') === 'yes' ? 'selected' : '' }}>Yes</option>
                     <option value="no" {{ ($filters['filter_website'] ?? '') === 'no' ? 'selected' : '' }}>No</option>
@@ -68,7 +68,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Min Rating</label>
-                <select name="filter_rating" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <select name="filter_rating" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
                     <option value="">Any</option>
                     <option value="4" {{ ($filters['filter_rating'] ?? '') === '4' ? 'selected' : '' }}>4+</option>
                     <option value="3" {{ ($filters['filter_rating'] ?? '') === '3' ? 'selected' : '' }}>3+</option>
@@ -91,9 +91,6 @@
                     <option value="reviews" {{ ($filters['sort_by'] ?? '') === 'reviews' ? 'selected' : '' }}>Most Reviews</option>
                 </select>
             </div>
-            <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-2 rounded-lg transition">
-                Apply Filters
-            </button>
             <a href="{{ route('leads.index') }}" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg transition">
                 Clear All
             </a>
@@ -101,6 +98,16 @@
     </form>
 </div>
 </div>
+
+<script>
+let searchTimeout;
+document.getElementById('searchInput').addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+        document.getElementById('filterForm').submit();
+    }, 500);
+});
+</script>
 
 {{-- Results --}}
 <div class="bg-white rounded-lg shadow overflow-hidden mx-4">
@@ -116,6 +123,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
@@ -133,6 +141,13 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 @if($lead->phone)
                                     <a href="tel:{{ $lead->phone }}" class="text-indigo-600 hover:text-indigo-800">{{ $lead->phone }}</a>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                @if($lead->email)
+                                    <a href="mailto:{{ $lead->email }}" class="text-indigo-600 hover:text-indigo-800 truncate block max-w-[200px]">{{ $lead->email }}</a>
                                 @else
                                     <span class="text-gray-400">-</span>
                                 @endif

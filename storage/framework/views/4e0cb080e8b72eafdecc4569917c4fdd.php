@@ -125,8 +125,6 @@ document.getElementById('searchInput').addEventListener('input', function() {
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -160,7 +158,7 @@ document.getElementById('searchInput').addEventListener('input', function() {
                                     <span class="text-gray-400">-</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 max-w-[250px] truncate"><?php echo e($lead->address ?: '-'); ?></td>
+                            <td class="px-6 py-4 text-sm text-gray-600 max-w-[300px] break-words"><?php echo e($lead->address ?: '-'); ?></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 <?php if($lead->rating): ?>
                                     <span class="text-yellow-500 font-semibold">★ <?php echo e(number_format($lead->rating, 1)); ?></span>
@@ -168,12 +166,6 @@ document.getElementById('searchInput').addEventListener('input', function() {
                                 <?php else: ?>
                                     <span class="text-gray-400">-</span>
                                 <?php endif; ?>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 rounded-full"><?php echo e($lead->category ?: '-'); ?></span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full"><?php echo e($lead->source ?: '-'); ?></span>
                             </td>
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

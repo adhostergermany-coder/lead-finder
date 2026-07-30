@@ -50,14 +50,11 @@
                     @endforeach
                 </select>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Has Phone</label>
-                <select name="filter_phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
-                    <option value="">Any</option>
-                    <option value="yes" {{ ($filters['filter_phone'] ?? '') === 'yes' ? 'selected' : '' }}>Yes</option>
-                    <option value="no" {{ ($filters['filter_phone'] ?? '') === 'no' ? 'selected' : '' }}>No</option>
-                </select>
-            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="text" name="filter_email" value="{{ $filters['filter_email'] ?? '' }}" placeholder="Filter by email..."
+                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" id="emailFilterInput">
+                            </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Has Website</label>
                 <select name="filter_website" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
@@ -136,10 +133,9 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-96">Company</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website Quality</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Status</th>
@@ -149,8 +145,9 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($leads as $lead)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="px-6 py-4 w-96 align-top">
                                 <div class="text-sm font-semibold text-gray-900">{{ $lead->company_name }}</div>
+                                <div class="text-xs text-gray-500 mt-1 break-words">{{ $lead->address ?: '-' }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm email-cell">
                                 <input type="email" value="{{ $lead->email }}" placeholder="Add email..."
@@ -159,14 +156,13 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 @if($lead->website)
-                                    <a href="{{ $lead->website }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 truncate block max-w-[200px]">
+                                    <a href="{{ $lead->website }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-xs break-all">
                                         {{ parse_url($lead->website, PHP_URL_HOST) ?? $lead->website }}
                                     </a>
                                 @else
                                     <span class="text-gray-400">-</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-600 max-w-[300px] break-words">{{ $lead->address ?: '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 @if($lead->rating)
                                     <span class="text-yellow-500 font-semibold">★ {{ number_format($lead->rating, 1) }}</span>
@@ -258,6 +254,14 @@ let websiteUrlTimeout;
 document.getElementById('websiteUrlInput').addEventListener('input', function() {
     clearTimeout(websiteUrlTimeout);
     websiteUrlTimeout = setTimeout(function() {
+        document.getElementById('filterForm').submit();
+    }, 500);
+});
+
+let emailFilterTimeout;
+document.getElementById('emailFilterInput').addEventListener('input', function() {
+    clearTimeout(emailFilterTimeout);
+    emailFilterTimeout = setTimeout(function() {
         document.getElementById('filterForm').submit();
     }, 500);
 });

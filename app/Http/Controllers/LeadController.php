@@ -69,7 +69,7 @@ class LeadController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('company_name', 'like', "%{$search}%")
                     ->orWhere('address', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -77,14 +77,8 @@ class LeadController extends Controller
             $query->where('category', $request->filter_category);
         }
 
-        if ($request->filled('filter_phone')) {
-            if ($request->filter_phone === 'yes') {
-                $query->whereNotNull('phone')->where('phone', '!=', '');
-            } else {
-                $query->where(function ($q) {
-                    $q->whereNull('phone')->orWhere('phone', '');
-                });
-            }
+        if ($request->filled('filter_email')) {
+            $query->where('email', 'like', "%{$request->filter_email}%");
         }
 
         if ($request->filled('filter_website')) {
@@ -145,7 +139,7 @@ class LeadController extends Controller
             'categories' => $categories,
             'filters' => $request->only([
                 'area', 'type', 'search', 'filter_category',
-                'filter_phone', 'filter_website', 'filter_website_url',
+                'filter_email', 'filter_website', 'filter_website_url',
                 'filter_rating', 'filter_website_quality', 'filter_contact_status',
                 'sort_by',
             ]),

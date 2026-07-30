@@ -35,6 +35,22 @@ class DashboardController extends Controller
             ->whereNotNull('category')->where('category', '!=', '')
             ->groupBy('category')->orderByDesc('total')->take(10)->get();
 
+        $areaCount = Lead::whereNotNull('area')->where('area', '!=', '')
+            ->distinct('area')->count('area');
+
+        $areaStats = Lead::select('area', DB::raw('count(*) as total'))
+            ->whereNotNull('area')->where('area', '!=', '')
+            ->groupBy('area')->orderByDesc('total')->take(10)->get();
+
+        $topCategoryPerArea = [];
+        foreach ($areaStats as $stat) {
+            $top = Lead::where('area', $stat->area)
+                ->whereNotNull('category')->where('category', '!=', '')
+                ->select('category', DB::raw('count(*) as total'))
+                ->groupBy('category')->orderByDesc('total')->first();
+            $topCategoryPerArea[$stat->area] = $top?->category ?? '-';
+        }
+
         $topRated = Lead::whereNotNull('rating')->orderByDesc('rating')->take(5)->get();
 
         $recentActivities = ActivityLog::with(['user', 'lead'])
@@ -47,7 +63,7 @@ class DashboardController extends Controller
         return view('admin.dashboard', compact(
             'totalLeads', 'withEmail', 'withWhatsapp', 'withPhone', 'withWebsite',
             'avgRating', 'categories', 'leadsToday', 'leadsThisWeek', 'leadsThisMonth',
-            'qualityStats', 'contactStats', 'categoryStats', 'topRated',
+            'qualityStats', 'contactStats', 'categoryStats', 'areaCount', 'areaStats', 'topCategoryPerArea', 'topRated',
             'recentActivities', 'missingEmail', 'missingWebsite', 'missingWhatsapp'
         ));
     }

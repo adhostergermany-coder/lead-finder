@@ -7,183 +7,188 @@
 <div class="mx-4">
 
     {{-- Stats Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-lg shadow p-5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <div class="bg-white rounded-lg shadow-sm p-4">
             <p class="text-xs text-gray-500 uppercase tracking-wide">Total Leads</p>
-            <p class="text-3xl font-bold text-gray-800">{{ $totalLeads }}</p>
-            <div class="flex gap-3 mt-2 text-xs text-gray-500">
+            <p class="text-2xl font-bold text-gray-800">{{ $totalLeads }}</p>
+            <div class="flex gap-2 mt-1 text-xs text-gray-500">
                 <span>Today: <strong>{{ $leadsToday }}</strong></span>
                 <span>Week: <strong>{{ $leadsThisWeek }}</strong></span>
-                <span>Month: <strong>{{ $leadsThisMonth }}</strong></span>
             </div>
         </div>
-        <div class="bg-white rounded-lg shadow p-5">
+        <div class="bg-white rounded-lg shadow-sm p-4">
             <p class="text-xs text-gray-500 uppercase tracking-wide">Avg Rating</p>
-            <p class="text-3xl font-bold text-yellow-500">{{ $avgRating ? number_format($avgRating, 1) : '-' }}</p>
-            <p class="text-xs text-gray-500 mt-2">{{ $categories->count() }} Categories</p>
+            <p class="text-2xl font-bold text-yellow-500">{{ $avgRating ? number_format($avgRating, 1) : '-' }}</p>
+            <p class="text-xs text-gray-500 mt-1">{{ $categories->count() }} Categories &bull; {{ $areaCount }} Areas</p>
         </div>
-        <div class="bg-white rounded-lg shadow p-5">
+        <div class="bg-white rounded-lg shadow-sm p-4">
             <p class="text-xs text-gray-500 uppercase tracking-wide">With Contact</p>
-            <p class="text-3xl font-bold text-gray-800">{{ $withEmail + $withWhatsapp + $withPhone }}</p>
-            <div class="flex gap-3 mt-2 text-xs text-gray-500">
+            <p class="text-2xl font-bold text-gray-800">{{ $withEmail + $withWhatsapp + $withPhone }}</p>
+            <div class="flex gap-2 mt-1 text-xs text-gray-500">
                 <span>Email: <strong>{{ $withEmail }}</strong></span>
                 <span>WA: <strong>{{ $withWhatsapp }}</strong></span>
-                <span>Phone: <strong>{{ $withPhone }}</strong></span>
             </div>
         </div>
-        <div class="bg-white rounded-lg shadow p-5">
-            <p class="text-xs text-gray-500 uppercase tracking-wide">Missing Data</p>
-            <p class="text-3xl font-bold text-red-500">{{ $missingEmail + $missingWebsite + $missingWhatsapp }}</p>
-            <div class="flex gap-3 mt-2 text-xs text-gray-500">
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <p class="text-xs text-gray-500 uppercase tracking-wide">Missing</p>
+            <p class="text-2xl font-bold text-red-500">{{ $missingEmail + $missingWebsite + $missingWhatsapp }}</p>
+            <div class="flex gap-2 mt-1 text-xs text-gray-500">
                 <span>No Email: <strong>{{ $missingEmail }}</strong></span>
-                <span>No WA: <strong>{{ $missingWhatsapp }}</strong></span>
                 <span>No Web: <strong>{{ $missingWebsite }}</strong></span>
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-
-        {{-- Website Quality --}}
-        <div class="bg-white rounded-lg shadow">
-            <div class="px-5 py-3 border-b border-gray-200">
-                <h3 class="font-semibold text-gray-800">Website Quality</h3>
-            </div>
-            <div class="p-5 space-y-2">
-                @php $qualityColors = ['Good' => '#22c55e', 'Average' => '#eab308', 'Bad' => '#ef4444', 'Error' => '#6b7280']; @endphp
-                @foreach(['Good', 'Average', 'Bad', 'Error'] as $q)
-                    @php $count = $qualityStats[$q] ?? 0; $pct = $totalLeads > 0 ? round($count / $totalLeads * 100) : 0; @endphp
-                    <div>
-                        <div class="flex justify-between text-sm">
-                            <span>{{ $q }}</span>
-                            <span class="font-medium">{{ $count }} ({{ $pct }}%)</span>
+    {{-- Charts + Tables Row --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        {{-- Quality & Contact --}}
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <h3 class="font-semibold text-gray-800 text-sm mb-3">Website Quality</h3>
+            <div class="flex gap-6">
+                <div class="w-1/2">
+                    <canvas id="qualityChart" height="120"></canvas>
+                </div>
+                <div class="w-1/2 space-y-2">
+                    @php $ql = ['Good' => '#22c55e', 'Average' => '#eab308', 'Bad' => '#ef4444', 'Error' => '#6b7280']; @endphp
+                    @foreach(['Good', 'Average', 'Bad', 'Error'] as $q)
+                        @php $cnt = $qualityStats[$q] ?? 0; @endphp
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-2.5 h-2.5 rounded-full" style="background: {{ $ql[$q] }}"></span>
+                            <span class="text-gray-600 w-14">{{ $q }}</span>
+                            <span class="font-medium">{{ $cnt }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div class="h-2 rounded-full" style="width: {{ $pct }}%; background-color: {{ $qualityColors[$q] }}"></div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Contact Status --}}
-        <div class="bg-white rounded-lg shadow">
-            <div class="px-5 py-3 border-b border-gray-200">
-                <h3 class="font-semibold text-gray-800">Contact Status</h3>
-            </div>
-            <div class="p-5 space-y-2">
-                @php $contactColors = ['Mail' => '#3b82f6', 'WhatsApp' => '#22c55e', 'SMS' => '#eab308']; @endphp
-                @foreach(['Mail', 'WhatsApp', 'SMS'] as $c)
-                    @php $count = $contactStats[$c] ?? 0; $pct = $totalLeads > 0 ? round($count / $totalLeads * 100) : 0; @endphp
-                    <div>
-                        <div class="flex justify-between text-sm">
-                            <span>{{ $c }}</span>
-                            <span class="font-medium">{{ $count }} ({{ $pct }}%)</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div class="h-2 rounded-full" style="width: {{ $pct }}%; background-color: {{ $contactColors[$c] }}"></div>
-                        </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
         </div>
 
-        {{-- Top Categories --}}
-        <div class="bg-white rounded-lg shadow">
-            <div class="px-5 py-3 border-b border-gray-200">
-                <h3 class="font-semibold text-gray-800">Top Categories</h3>
-            </div>
-            <div class="p-5 space-y-2">
-                @foreach($categoryStats as $cat)
-                    @php $pct = $totalLeads > 0 ? round($cat->total / $totalLeads * 100) : 0; @endphp
-                    <div>
-                        <div class="flex justify-between text-sm">
-                            <span class="truncate">{{ $cat->category }}</span>
-                            <span class="font-medium">{{ $cat->total }}</span>
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <h3 class="font-semibold text-gray-800 text-sm mb-3">Contact Status</h3>
+            <div class="flex gap-6 items-center">
+                <div class="w-28">
+                    <canvas id="contactChart" height="100"></canvas>
+                </div>
+                <div class="space-y-2">
+                    @php $cl = ['Mail' => '#3b82f6', 'WhatsApp' => '#22c55e', 'SMS' => '#eab308']; @endphp
+                    @foreach(['Mail', 'WhatsApp', 'SMS'] as $c)
+                        @php $cnt = $contactStats[$c] ?? 0; @endphp
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-2.5 h-2.5 rounded-full" style="background: {{ $cl[$c] }}"></span>
+                            <span class="text-gray-600 w-20">{{ $c }}</span>
+                            <span class="font-medium">{{ $cnt }}</span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2 mt-1">
-                            <div class="h-2 rounded-full" style="width: {{ $pct }}%; background-color: #6366f1"></div>
-                        </div>
-                    </div>
-                @endforeach
-                @if($categoryStats->count() == 0)
-                    <p class="text-gray-400 text-sm">No categories yet.</p>
-                @endif
+                    @endforeach
+                </div>
             </div>
         </div>
-
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    {{-- Categories + Areas --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <h3 class="font-semibold text-gray-800 text-sm mb-3">Top Categories</h3>
+            <canvas id="categoryChart" height="100"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow-sm p-4">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-semibold text-gray-800 text-sm">Areas / Countries</h3>
+                <span class="text-xs text-gray-400">{{ $areaCount }} total</span>
+            </div>
+            <canvas id="areaChart" height="100"></canvas>
+        </div>
+    </div>
 
-        {{-- Top Rated --}}
-        <div class="bg-white rounded-lg shadow">
-            <div class="px-5 py-3 border-b border-gray-200">
-                <h3 class="font-semibold text-gray-800">Top Rated Leads</h3>
+    {{-- Top Rated + Recent Activity --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="bg-white rounded-lg shadow-sm">
+            <div class="px-4 py-3 border-b border-gray-100">
+                <h3 class="font-semibold text-gray-800 text-sm">Top Rated Leads</h3>
             </div>
-            <div class="overflow-x-auto">
-                @if($topRated->count() > 0)
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Rating</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Reviews</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @foreach($topRated as $lead)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-2 text-sm">{{ $lead->company_name }}</td>
-                                    <td class="px-4 py-2 text-sm text-yellow-500 font-semibold">★ {{ number_format($lead->rating, 1) }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-500">{{ $lead->total_ratings ?? 0 }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <div class="px-5 py-8 text-center text-gray-400">No ratings yet.</div>
-                @endif
-            </div>
+            @if($topRated->count() > 0)
+                <div class="divide-y divide-gray-100">
+                    @foreach($topRated as $lead)
+                        <div class="px-4 py-2.5 flex justify-between items-center text-sm">
+                            <span class="text-gray-700 truncate">{{ $lead->company_name }}</span>
+                            <span class="text-yellow-500 font-semibold ml-2 whitespace-nowrap">★ {{ number_format($lead->rating, 1) }} ({{ $lead->total_ratings ?? 0 }})</span>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="px-4 py-6 text-center text-gray-400 text-sm">No ratings yet.</div>
+            @endif
         </div>
 
-        {{-- Recent Activity --}}
-        <div class="bg-white rounded-lg shadow">
-            <div class="px-5 py-3 border-b border-gray-200">
-                <h3 class="font-semibold text-gray-800">Recent Activity</h3>
+        <div class="bg-white rounded-lg shadow-sm">
+            <div class="px-4 py-3 border-b border-gray-100">
+                <h3 class="font-semibold text-gray-800 text-sm">Recent Activity</h3>
             </div>
-            <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
-                @if($recentActivities->count() > 0)
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Lead</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Field</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Old Value</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">New Value</th>
-                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-                            @foreach($recentActivities as $a)
-                                <tr class="hover:bg-gray-50">
-                                    <td class="px-4 py-2 text-sm">{{ $a->user->name }}</td>
-                                    <td class="px-4 py-2 text-sm max-w-[120px] truncate">{{ $a->lead->company_name }}</td>
-                                    <td class="px-4 py-2 text-sm">{{ $a->field }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-500 max-w-[150px] break-words">{{ $a->old_value }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-500 max-w-[150px] break-words">{{ $a->new_value }}</td>
-                                    <td class="px-4 py-2 text-sm text-gray-400 whitespace-nowrap">{{ $a->created_at->diffForHumans() }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <div class="px-5 py-8 text-center text-gray-400">No activity yet.</div>
-                @endif
+            <div class="max-h-[240px] overflow-y-auto divide-y divide-gray-100">
+                @forelse($recentActivities as $a)
+                    <div class="px-4 py-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">{{ $a->user->name }}</span>
+                            <span class="text-gray-400">{{ $a->created_at->diffForHumans() }}</span>
+                        </div>
+                        <div class="text-gray-500 mt-0.5">
+                            <span class="font-medium">{{ $a->lead->company_name }}</span> &mdash; {{ $a->field }}:
+                            <span class="text-gray-400">{{ Str::limit($a->old_value, 20) }}</span>
+                            <span class="text-gray-300"> &rarr; </span>
+                            <span class="text-gray-600">{{ Str::limit($a->new_value, 20) }}</span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="px-4 py-6 text-center text-gray-400 text-sm">No activity yet.</div>
+                @endforelse
             </div>
         </div>
-
     </div>
 </div>
+
+@php
+$qualityLabelsJs = json_encode(['Good', 'Average', 'Bad', 'Error']);
+$qualityDataJs = json_encode([$qualityStats['Good'] ?? 0, $qualityStats['Average'] ?? 0, $qualityStats['Bad'] ?? 0, $qualityStats['Error'] ?? 0]);
+$qualityColorsJs = json_encode(['#22c55e', '#eab308', '#ef4444', '#6b7280']);
+
+$contactLabelsJs = json_encode(['Mail', 'WhatsApp', 'SMS']);
+$contactDataJs = json_encode([$contactStats['Mail'] ?? 0, $contactStats['WhatsApp'] ?? 0, $contactStats['SMS'] ?? 0]);
+$contactColorsJs = json_encode(['#3b82f6', '#22c55e', '#eab308']);
+
+$catLabels = []; $catData = [];
+foreach ($categoryStats as $c) { $catLabels[] = $c->category; $catData[] = $c->total; }
+$catLabelsJs = json_encode($catLabels);
+$catDataJs = json_encode($catData);
+
+$areaLabels = []; $areaData = [];
+foreach ($areaStats as $s) { $areaLabels[] = $s->area; $areaData[] = $s->total; }
+$areaLabelsJs = json_encode($areaLabels);
+$areaDataJs = json_encode($areaData);
+@endphp
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    new Chart(document.getElementById('qualityChart'), {
+        type: 'bar',
+        data: { labels: {!! $qualityLabelsJs !!}, datasets: [{ label: '', data: {!! $qualityDataJs !!}, backgroundColor: {!! $qualityColorsJs !!}, borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { x: { display: false }, y: { display: false, beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('contactChart'), {
+        type: 'doughnut',
+        data: { labels: {!! $contactLabelsJs !!}, datasets: [{ data: {!! $contactDataJs !!}, backgroundColor: {!! $contactColorsJs !!}, borderWidth: 0 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: { enabled: true } }, cutout: '65%' }
+    });
+
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'bar',
+        data: { labels: {!! $catLabelsJs !!}, datasets: [{ label: '', data: {!! $catDataJs !!}, backgroundColor: '#6366f1', borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { font: { size: 10 } } }, y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } } } }
+    });
+
+    new Chart(document.getElementById('areaChart'), {
+        type: 'bar',
+        data: { labels: {!! $areaLabelsJs !!}, datasets: [{ label: '', data: {!! $areaDataJs !!}, backgroundColor: '#8b5cf6', borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } }, y: { ticks: { font: { size: 10 } } } } }
+    });
+});
+</script>
 @endsection

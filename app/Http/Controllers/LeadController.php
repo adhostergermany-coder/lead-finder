@@ -150,4 +150,12 @@ class LeadController extends Controller
         return redirect()->route('leads.index')
             ->with('success', 'Lead deleted successfully.');
     }
+
+    public function updateQuality(Lead $lead)
+    {
+        $lead->update([
+            'website_quality' => request('website_quality'),
+        ]);
+        return response()->json(['success' => true]);
+    }
 }

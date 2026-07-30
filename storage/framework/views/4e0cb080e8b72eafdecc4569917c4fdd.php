@@ -97,16 +97,6 @@
 </div>
 </div>
 
-<script>
-let searchTimeout;
-document.getElementById('searchInput').addEventListener('input', function() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(function() {
-        document.getElementById('filterForm').submit();
-    }, 500);
-});
-</script>
-
 
 <div class="bg-white rounded-lg shadow overflow-hidden mx-4">
     <div class="px-6 py-4 border-b border-gray-200">
@@ -125,6 +115,7 @@ document.getElementById('searchInput').addEventListener('input', function() {
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website Quality</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -167,6 +158,15 @@ document.getElementById('searchInput').addEventListener('input', function() {
                                     <span class="text-gray-400">-</span>
                                 <?php endif; ?>
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <select class="border border-gray-300 rounded px-2 py-1 text-sm quality-select" data-id="<?php echo e($lead->id); ?>">
+                                    <option value="">-</option>
+                                    <option value="Good" <?php echo e(($lead->website_quality ?? '') === 'Good' ? 'selected' : ''); ?>>Good</option>
+                                    <option value="Average" <?php echo e(($lead->website_quality ?? '') === 'Average' ? 'selected' : ''); ?>>Average</option>
+                                    <option value="Bad" <?php echo e(($lead->website_quality ?? '') === 'Bad' ? 'selected' : ''); ?>>Bad</option>
+                                    <option value="Error" <?php echo e(($lead->website_quality ?? '') === 'Error' ? 'selected' : ''); ?>>Error</option>
+                                </select>
+                            </td>
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
@@ -185,6 +185,31 @@ document.getElementById('searchInput').addEventListener('input', function() {
         </div>
     <?php endif; ?>
 </div>
+
+<script>
+let searchTimeout;
+document.getElementById('searchInput').addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+        document.getElementById('filterForm').submit();
+    }, 500);
+});
+
+document.querySelectorAll('.quality-select').forEach(function(select) {
+    select.addEventListener('change', function() {
+        var leadId = this.dataset.id;
+        var quality = this.value;
+        fetch('/leads/' + leadId + '/quality', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+            },
+            body: JSON.stringify({ website_quality: quality })
+        }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
+    });
+});
+</script>
 
 <?php $__env->stopSection(); ?>
 

@@ -160,12 +160,12 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <select class="border border-gray-300 rounded px-2 py-1 text-sm quality-select" data-id="{{ $lead->id }}">
-                                    <option value="">-</option>
-                                    <option value="Good" {{ ($lead->website_quality ?? '') === 'Good' ? 'selected' : '' }}>Good</option>
-                                    <option value="Average" {{ ($lead->website_quality ?? '') === 'Average' ? 'selected' : '' }}>Average</option>
-                                    <option value="Bad" {{ ($lead->website_quality ?? '') === 'Bad' ? 'selected' : '' }}>Bad</option>
-                                    <option value="Error" {{ ($lead->website_quality ?? '') === 'Error' ? 'selected' : '' }}>Error</option>
+                                <select class="border rounded px-2 py-1 text-sm font-medium quality-select" data-id="{{ $lead->id }}" style="background-color: @if(($lead->website_quality ?? '') === 'Good') #d1fae5; color: #065f46; @elseif(($lead->website_quality ?? '') === 'Average') #fef3c7; color: #92400e; @elseif(($lead->website_quality ?? '') === 'Bad') #fee2e2; color: #991b1b; @elseif(($lead->website_quality ?? '') === 'Error') #e5e7eb; color: #374151; @else #f9fafb; color: #6b7280; @endif">
+                                    <option value="" style="background-color:#f9fafb; color:#6b7280;">-</option>
+                                    <option value="Good" {{ ($lead->website_quality ?? '') === 'Good' ? 'selected' : '' }} style="background-color:#d1fae5; color:#065f46;">Good</option>
+                                    <option value="Average" {{ ($lead->website_quality ?? '') === 'Average' ? 'selected' : '' }} style="background-color:#fef3c7; color:#92400e;">Average</option>
+                                    <option value="Bad" {{ ($lead->website_quality ?? '') === 'Bad' ? 'selected' : '' }} style="background-color:#fee2e2; color:#991b1b;">Bad</option>
+                                    <option value="Error" {{ ($lead->website_quality ?? '') === 'Error' ? 'selected' : '' }} style="background-color:#e5e7eb; color:#374151;">Error</option>
                                 </select>
                             </td>
                         </tr>

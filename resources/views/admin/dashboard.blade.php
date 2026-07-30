@@ -160,6 +160,8 @@
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">User</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Lead</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Field</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Old Value</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">New Value</th>
                                 <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
                             </tr>
                         </thead>
@@ -169,6 +171,8 @@
                                     <td class="px-4 py-2 text-sm">{{ $a->user->name }}</td>
                                     <td class="px-4 py-2 text-sm max-w-[120px] truncate">{{ $a->lead->company_name }}</td>
                                     <td class="px-4 py-2 text-sm">{{ $a->field }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-500 max-w-[150px] break-words">{{ $a->old_value }}</td>
+                                    <td class="px-4 py-2 text-sm text-gray-500 max-w-[150px] break-words">{{ $a->new_value }}</td>
                                     <td class="px-4 py-2 text-sm text-gray-400 whitespace-nowrap">{{ $a->created_at->diffForHumans() }}</td>
                                 </tr>
                             @endforeach

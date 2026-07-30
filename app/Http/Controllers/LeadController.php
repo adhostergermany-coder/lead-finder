@@ -220,13 +220,25 @@ class LeadController extends Controller
     private function log(Lead $lead, string $field, $oldValue, $newValue): void
     {
         if ($oldValue !== $newValue) {
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'lead_id' => $lead->id,
-                'field' => $field,
-                'old_value' => $oldValue ?: '(empty)',
-                'new_value' => $newValue ?: '(empty)',
-            ]);
+            $existing = ActivityLog::where('lead_id', $lead->id)
+                ->where('field', $field)
+                ->first();
+
+            if ($existing) {
+                $existing->update([
+                    'old_value' => $existing->new_value,
+                    'new_value' => $newValue ?: '(empty)',
+                    'user_id' => Auth::id(),
+                ]);
+            } else {
+                ActivityLog::create([
+                    'user_id' => Auth::id(),
+                    'lead_id' => $lead->id,
+                    'field' => $field,
+                    'old_value' => $oldValue ?: '(empty)',
+                    'new_value' => $newValue ?: '(empty)',
+                ]);
+            }
         }
     }
 }

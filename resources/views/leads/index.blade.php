@@ -136,34 +136,25 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website Quality</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($leads as $lead)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $lead->id }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-semibold text-gray-900">{{ $lead->company_name }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                @if($lead->phone)
-                                    <a href="tel:{{ $lead->phone }}" class="text-indigo-600 hover:text-indigo-800">{{ $lead->phone }}</a>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm email-cell">
                                 <input type="email" value="{{ $lead->email }}" placeholder="Add email..."
-                                    class="email-input w-full border border-transparent hover:border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded px-2 py-1 text-sm bg-transparent focus:bg-white transition"
+                                    class="email-input w-full border border-gray-300 hover:border-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded px-2 py-1 text-sm bg-white transition"
                                     data-id="{{ $lead->id }}">
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -200,6 +191,11 @@
                                     <option value="WhatsApp" {{ ($lead->contact_status ?? '') === 'WhatsApp' ? 'selected' : '' }} style="background-color:#d1fae5; color:#065f46;">WhatsApp</option>
                                     <option value="SMS" {{ ($lead->contact_status ?? '') === 'SMS' ? 'selected' : '' }} style="background-color:#fef3c7; color:#92400e;">SMS</option>
                                 </select>
+                            </td>
+                            <td class="px-6 py-4 text-sm note-cell">
+                                <textarea rows="2"
+                                    class="note-input w-full border border-gray-300 hover:border-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded px-2 py-1 text-sm bg-white transition"
+                                    data-id="{{ $lead->id }}">{{ $lead->note }}</textarea>
                             </td>
                         </tr>
                     @endforeach
@@ -280,6 +276,25 @@ document.querySelectorAll('.email-input').forEach(function(input) {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({ email: email })
+            }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
+        }, 600);
+    });
+});
+
+let noteTimeouts = {};
+document.querySelectorAll('.note-input').forEach(function(input) {
+    input.addEventListener('input', function() {
+        var leadId = this.dataset.id;
+        var note = this.value;
+        clearTimeout(noteTimeouts[leadId]);
+        noteTimeouts[leadId] = setTimeout(function() {
+            fetch('/leads/' + leadId + '/note', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ note: note })
             }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
         }, 600);
     });

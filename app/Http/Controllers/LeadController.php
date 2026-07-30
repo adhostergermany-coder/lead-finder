@@ -93,6 +93,16 @@ class LeadController extends Controller
             }
         }
 
+        if ($request->filled('filter_has_email')) {
+            if ($request->filter_has_email === 'yes') {
+                $query->whereNotNull('email')->where('email', '!=', '');
+            } else {
+                $query->where(function ($q) {
+                    $q->whereNull('email')->orWhere('email', '');
+                });
+            }
+        }
+
         if ($request->filled('filter_website_url')) {
             $query->where('website', 'like', "%{$request->filter_website_url}%");
         }
@@ -141,7 +151,7 @@ class LeadController extends Controller
             'categories' => $categories,
             'filters' => $request->only([
                 'area', 'type', 'search', 'filter_category',
-                'filter_email', 'filter_website', 'filter_website_url',
+                'filter_email', 'filter_website', 'filter_has_email', 'filter_website_url',
                 'filter_rating', 'filter_website_quality', 'filter_contact_status',
                 'sort_by',
             ]),

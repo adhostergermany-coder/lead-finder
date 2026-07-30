@@ -100,6 +100,14 @@
                 </select>
             </div>
             <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Has Email</label>
+                <select name="filter_has_email" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
+                    <option value="">Any</option>
+                    <option value="yes" <?php echo e(($filters['filter_has_email'] ?? '') === 'yes' ? 'selected' : ''); ?>>Yes</option>
+                    <option value="no" <?php echo e(($filters['filter_has_email'] ?? '') === 'no' ? 'selected' : ''); ?>>No</option>
+                </select>
+            </div>
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
                 <select name="sort_by" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
                     <option value="newest" <?php echo e(($filters['sort_by'] ?? 'newest') === 'newest' ? 'selected' : ''); ?>>Newest First</option>
@@ -175,6 +183,21 @@
                                     </a>
                                 <?php else: ?>
                                     <span class="text-gray-400">-</span>
+                                <?php endif; ?>
+                                <?php if($lead->phone): ?>
+                                    <div class="mt-1 flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                        </svg>
+                                        <span class="text-gray-700 text-xs"><?php echo e($lead->phone); ?></span>
+                                        <button onclick="copyText(<?php echo e(json_encode($lead->phone)); ?>)" 
+                                            class="copy-btn ml-1 text-gray-400 hover:text-indigo-600 transition" 
+                                            title="Copy phone number">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
                                 <?php endif; ?>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -337,6 +360,47 @@ document.querySelectorAll('.note-input').forEach(function(input) {
         }, 600);
     });
 });
+
+function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            showCopyToast('Copied!');
+        }).catch(function() {
+            fallbackCopy(text);
+        });
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+function fallbackCopy(text) {
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        showCopyToast('Copied!');
+    } catch (e) {
+        alert('Failed to copy');
+    }
+    document.body.removeChild(textarea);
+}
+
+function showCopyToast(message) {
+    var toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#059669;color:white;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:opacity 0.3s;opacity:1;';
+    document.body.appendChild(toast);
+    setTimeout(function() {
+        toast.style.opacity = '0';
+        setTimeout(function() {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 2000);
+}
 </script>
 
 <?php $__env->stopSection(); ?>

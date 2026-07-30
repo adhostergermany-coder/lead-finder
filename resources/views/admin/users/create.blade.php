@@ -62,6 +62,7 @@
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Created</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -70,6 +71,9 @@
                             <td class="px-4 py-2 text-sm">{{ $user->name }}</td>
                             <td class="px-4 py-2 text-sm">{{ $user->email }}</td>
                             <td class="px-4 py-2 text-sm text-gray-500">{{ $user->created_at->format('M d, Y') }}</td>
+                            <td class="px-4 py-2 text-sm">
+                                <a href="{{ route('admin.users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-800">Edit</a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

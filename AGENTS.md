@@ -4,7 +4,7 @@
 
 - **Laravel 13** (PHP 8.3+) — backend only. The Inertia+React setup (`resources/js/`, `HandleInertiaRequests.php`) is **unused**; all rendering is Blade + Tailwind CSS v4 (CDN).
 - **SQLite** default. Session & queue also default to `database` driver.
-- **Python 3** — two data-fetch scripts in `scripts/` (OSM Photon + Google Places New API).
+
 
 ## Setup
 
@@ -43,10 +43,6 @@ Starts: `php artisan serve` + `queue:listen` + `pail` (logs) + `npm run dev` (Vi
 - **Dedup**: `WHERE company_name = ? AND area = ?` before insert.
 - **Pagination**: 15 per page, `withQueryString()`.
 - **Inline editing**: `PUT /leads/{lead}/quality` and `PUT /leads/{lead}/contact` — both return `{success: true}`.
-
-## Data-fetch scripts
-
-Standalone Python scripts. Dependencies: `requests`. Run via `python scripts/osm_fetch.py --area ... --type ... --out ...` or `python scripts/google_places_fetch.py --area ... --type ... --out ... --api-key ...`.
 
 ## Gotchas
 

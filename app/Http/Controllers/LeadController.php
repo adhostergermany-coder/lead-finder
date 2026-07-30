@@ -35,7 +35,7 @@ class LeadController extends Controller
                         ->where('area', $leadData['area'])
                         ->exists();
 
-                    if (!$exists) {
+                    if (! $exists) {
                         Lead::create($leadData);
                         $savedCount++;
                     } else {
@@ -58,7 +58,7 @@ class LeadController extends Controller
                 return redirect()->route('leads.index', [
                     'area' => $request->area,
                     'type' => $request->type,
-                ])->with('error', 'Search failed: ' . $e->getMessage());
+                ])->with('error', 'Search failed: '.$e->getMessage());
             }
         }
 
@@ -68,8 +68,8 @@ class LeadController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('company_name', 'like', "%{$search}%")
-                  ->orWhere('address', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -97,8 +97,20 @@ class LeadController extends Controller
             }
         }
 
+        if ($request->filled('filter_website_url')) {
+            $query->where('website', 'like', "%{$request->filter_website_url}%");
+        }
+
         if ($request->filled('filter_rating')) {
             $query->where('rating', '>=', $request->filter_rating);
+        }
+
+        if ($request->filled('filter_website_quality')) {
+            $query->where('website_quality', $request->filter_website_quality);
+        }
+
+        if ($request->filled('filter_contact_status')) {
+            $query->where('contact_status', $request->filter_contact_status);
         }
 
         $sortBy = $request->get('sort_by', 'newest');
@@ -133,7 +145,9 @@ class LeadController extends Controller
             'categories' => $categories,
             'filters' => $request->only([
                 'area', 'type', 'search', 'filter_category',
-                'filter_phone', 'filter_website', 'filter_rating', 'sort_by',
+                'filter_phone', 'filter_website', 'filter_website_url',
+                'filter_rating', 'filter_website_quality', 'filter_contact_status',
+                'sort_by',
             ]),
             'hasApiKey' => (bool) config('services.google_places.api_key'),
         ]);
@@ -147,6 +161,7 @@ class LeadController extends Controller
     public function destroy(Lead $lead)
     {
         $lead->delete();
+
         return redirect()->route('leads.index')
             ->with('success', 'Lead deleted successfully.');
     }
@@ -156,6 +171,7 @@ class LeadController extends Controller
         $lead->update([
             'website_quality' => request('website_quality'),
         ]);
+
         return response()->json(['success' => true]);
     }
 
@@ -164,6 +180,7 @@ class LeadController extends Controller
         $lead->update([
             'contact_status' => request('contact_status'),
         ]);
+
         return response()->json(['success' => true]);
     }
 
@@ -172,6 +189,7 @@ class LeadController extends Controller
         $lead->update([
             'email' => request('email'),
         ]);
+
         return response()->json(['success' => true]);
     }
 }

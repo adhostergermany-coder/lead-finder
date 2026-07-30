@@ -33,7 +33,7 @@
         <?php if(!empty($filters['area'])): ?> <input type="hidden" name="area" value="<?php echo e($filters['area']); ?>"> <?php endif; ?>
         <?php if(!empty($filters['type'])): ?> <input type="hidden" name="type" value="<?php echo e($filters['type']); ?>"> <?php endif; ?>
 
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
                 <input type="text" name="search" value="<?php echo e($filters['search'] ?? ''); ?>" placeholder="Name, address, phone..."
@@ -74,10 +74,34 @@
                     <option value="1" <?php echo e(($filters['filter_rating'] ?? '') === '1' ? 'selected' : ''); ?>>1+</option>
                 </select>
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
+                <input type="text" name="filter_website_url" value="<?php echo e($filters['filter_website_url'] ?? ''); ?>" placeholder="Search by domain..."
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" id="websiteUrlInput">
+            </div>
         </div>
 
-        <div class="flex flex-col md:flex-row gap-4 mt-4 items-end">
-            <div class="flex-1">
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mt-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Website Quality</label>
+                <select name="filter_website_quality" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    <option value="Good" <?php echo e(($filters['filter_website_quality'] ?? '') === 'Good' ? 'selected' : ''); ?>>Good</option>
+                    <option value="Average" <?php echo e(($filters['filter_website_quality'] ?? '') === 'Average' ? 'selected' : ''); ?>>Average</option>
+                    <option value="Bad" <?php echo e(($filters['filter_website_quality'] ?? '') === 'Bad' ? 'selected' : ''); ?>>Bad</option>
+                    <option value="Error" <?php echo e(($filters['filter_website_quality'] ?? '') === 'Error' ? 'selected' : ''); ?>>Error</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Contact Status</label>
+                <select name="filter_contact_status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    <option value="Mail" <?php echo e(($filters['filter_contact_status'] ?? '') === 'Mail' ? 'selected' : ''); ?>>Mail</option>
+                    <option value="WhatsApp" <?php echo e(($filters['filter_contact_status'] ?? '') === 'WhatsApp' ? 'selected' : ''); ?>>WhatsApp</option>
+                    <option value="SMS" <?php echo e(($filters['filter_contact_status'] ?? '') === 'SMS' ? 'selected' : ''); ?>>SMS</option>
+                </select>
+            </div>
+            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
                 <select name="sort_by" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" onchange="this.form.submit()">
                     <option value="newest" <?php echo e(($filters['sort_by'] ?? 'newest') === 'newest' ? 'selected' : ''); ?>>Newest First</option>
@@ -89,9 +113,11 @@
                     <option value="reviews" <?php echo e(($filters['sort_by'] ?? '') === 'reviews' ? 'selected' : ''); ?>>Most Reviews</option>
                 </select>
             </div>
-            <a href="<?php echo e(route('leads.index')); ?>" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg transition">
-                Clear All
-            </a>
+            <div class="flex items-end">
+                <a href="<?php echo e(route('leads.index')); ?>" class="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg transition w-full">
+                    Clear All
+                </a>
+            </div>
         </div>
     </form>
 </div>
@@ -230,6 +256,14 @@ document.querySelectorAll('.contact-select').forEach(function(select) {
             body: JSON.stringify({ contact_status: status })
         }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
     });
+});
+
+let websiteUrlTimeout;
+document.getElementById('websiteUrlInput').addEventListener('input', function() {
+    clearTimeout(websiteUrlTimeout);
+    websiteUrlTimeout = setTimeout(function() {
+        document.getElementById('filterForm').submit();
+    }, 500);
 });
 
 let emailTimeouts = {};

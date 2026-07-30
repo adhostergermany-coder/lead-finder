@@ -116,6 +116,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website Quality</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Status</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -167,6 +168,14 @@
                                     <option value="Error" <?php echo e(($lead->website_quality ?? '') === 'Error' ? 'selected' : ''); ?> style="background-color:#e5e7eb; color:#374151;">Error</option>
                                 </select>
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <select class="border rounded px-2 py-1 text-sm font-medium contact-select" data-id="<?php echo e($lead->id); ?>" style="background-color: <?php if(($lead->contact_status ?? '') === 'Mail'): ?> #dbeafe; color: #1e40af; <?php elseif(($lead->contact_status ?? '') === 'WhatsApp'): ?> #d1fae5; color: #065f46; <?php elseif(($lead->contact_status ?? '') === 'SMS'): ?> #fef3c7; color: #92400e; <?php else: ?> #f9fafb; color: #6b7280; <?php endif; ?>">
+                                    <option value="" style="background-color:#f9fafb; color:#6b7280;">-</option>
+                                    <option value="Mail" <?php echo e(($lead->contact_status ?? '') === 'Mail' ? 'selected' : ''); ?> style="background-color:#dbeafe; color:#1e40af;">Mail</option>
+                                    <option value="WhatsApp" <?php echo e(($lead->contact_status ?? '') === 'WhatsApp' ? 'selected' : ''); ?> style="background-color:#d1fae5; color:#065f46;">WhatsApp</option>
+                                    <option value="SMS" <?php echo e(($lead->contact_status ?? '') === 'SMS' ? 'selected' : ''); ?> style="background-color:#fef3c7; color:#92400e;">SMS</option>
+                                </select>
+                            </td>
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
@@ -206,6 +215,21 @@ document.querySelectorAll('.quality-select').forEach(function(select) {
                 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
             },
             body: JSON.stringify({ website_quality: quality })
+        }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
+    });
+});
+
+document.querySelectorAll('.contact-select').forEach(function(select) {
+    select.addEventListener('change', function() {
+        var leadId = this.dataset.id;
+        var status = this.value;
+        fetch('/leads/' + leadId + '/contact', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+            },
+            body: JSON.stringify({ contact_status: status })
         }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
     });
 });

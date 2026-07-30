@@ -20,5 +20,6 @@ class Lead extends Model
         'rating',
         'total_ratings',
         'website_quality',
+        'contact_status',
     ];
 }

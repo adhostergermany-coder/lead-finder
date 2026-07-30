@@ -118,6 +118,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website Quality</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Status</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
@@ -168,6 +169,14 @@
                                     <option value="Error" {{ ($lead->website_quality ?? '') === 'Error' ? 'selected' : '' }} style="background-color:#e5e7eb; color:#374151;">Error</option>
                                 </select>
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <select class="border rounded px-2 py-1 text-sm font-medium contact-select" data-id="{{ $lead->id }}" style="background-color: @if(($lead->contact_status ?? '') === 'Mail') #dbeafe; color: #1e40af; @elseif(($lead->contact_status ?? '') === 'WhatsApp') #d1fae5; color: #065f46; @elseif(($lead->contact_status ?? '') === 'SMS') #fef3c7; color: #92400e; @else #f9fafb; color: #6b7280; @endif">
+                                    <option value="" style="background-color:#f9fafb; color:#6b7280;">-</option>
+                                    <option value="Mail" {{ ($lead->contact_status ?? '') === 'Mail' ? 'selected' : '' }} style="background-color:#dbeafe; color:#1e40af;">Mail</option>
+                                    <option value="WhatsApp" {{ ($lead->contact_status ?? '') === 'WhatsApp' ? 'selected' : '' }} style="background-color:#d1fae5; color:#065f46;">WhatsApp</option>
+                                    <option value="SMS" {{ ($lead->contact_status ?? '') === 'SMS' ? 'selected' : '' }} style="background-color:#fef3c7; color:#92400e;">SMS</option>
+                                </select>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -206,6 +215,21 @@ document.querySelectorAll('.quality-select').forEach(function(select) {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({ website_quality: quality })
+        }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
+    });
+});
+
+document.querySelectorAll('.contact-select').forEach(function(select) {
+    select.addEventListener('change', function() {
+        var leadId = this.dataset.id;
+        var status = this.value;
+        fetch('/leads/' + leadId + '/contact', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ contact_status: status })
         }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
     });
 });

@@ -158,4 +158,12 @@ class LeadController extends Controller
         ]);
         return response()->json(['success' => true]);
     }
+
+    public function updateContact(Lead $lead)
+    {
+        $lead->update([
+            'contact_status' => request('contact_status'),
+        ]);
+        return response()->json(['success' => true]);
+    }
 }

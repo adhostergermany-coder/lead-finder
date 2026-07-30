@@ -11,6 +11,7 @@ class Lead extends Model
         'category',
         'email',
         'phone',
+        'whatsapp',
         'website',
         'address',
         'area',

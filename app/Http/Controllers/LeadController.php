@@ -195,4 +195,13 @@ class LeadController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function updateWhatsapp(Lead $lead)
+    {
+        $lead->update([
+            'whatsapp' => request('whatsapp'),
+        ]);
+
+        return response()->json(['success' => true]);
+    }
 }

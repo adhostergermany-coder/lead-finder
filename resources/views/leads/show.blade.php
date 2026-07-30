@@ -1,4 +1,7 @@
-@extends('layouts.app')
+@extends('admin.layout')
+
+@section('title', $lead->company_name . ' - Lead Finder')
+@section('page_title', $lead->company_name)
 
 @section('content')
 <div class="max-w-2xl mx-auto">

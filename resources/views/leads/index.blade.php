@@ -1,6 +1,7 @@
-@extends('layouts.app')
+@extends('admin.layout')
 
 @section('title', 'Leads - Lead Finder')
+@section('page_title', 'Leads')
 
 @section('content')
 
@@ -137,8 +138,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website Quality</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quality / Contact</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note</th>
                     </tr>
                 </thead>
@@ -149,10 +149,25 @@
                                 <div class="text-sm font-semibold text-gray-900">{{ $lead->company_name }}</div>
                                 <div class="text-xs text-gray-500 mt-1 break-words">{{ $lead->address ?: '-' }}</div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm email-cell">
-                                <input type="email" value="{{ $lead->email }}" placeholder="Add email..."
-                                    class="email-input w-full border border-gray-300 hover:border-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded px-2 py-1 text-sm bg-white transition"
-                                    data-id="{{ $lead->id }}">
+                            <td class="px-6 py-4 text-sm email-cell">
+                                <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                    </svg>
+                                    <input type="email" value="{{ $lead->email }}" placeholder="Add email..."
+                                        class="email-input w-full border border-gray-300 hover:border-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded px-2 py-1 text-sm bg-white transition"
+                                        data-id="{{ $lead->id }}">
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <svg class="w-4 h-4 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                    </svg>
+                                    <input type="text" value="{{ $lead->whatsapp }}" placeholder="WhatsApp..."
+                                        class="whatsapp-input w-full border border-gray-300 hover:border-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded px-2 py-1 text-sm bg-white transition"
+                                        data-id="{{ $lead->id }}">
+                                </div>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 @if($lead->website)
@@ -171,22 +186,22 @@
                                     <span class="text-gray-400">-</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <td class="px-6 py-4 text-sm">
+                                <div class="flex flex-col gap-1">
                                 <select class="border rounded px-2 py-1 text-sm font-medium quality-select" data-id="{{ $lead->id }}" style="background-color: @if(($lead->website_quality ?? '') === 'Good') #d1fae5; color: #065f46; @elseif(($lead->website_quality ?? '') === 'Average') #fef3c7; color: #92400e; @elseif(($lead->website_quality ?? '') === 'Bad') #fee2e2; color: #991b1b; @elseif(($lead->website_quality ?? '') === 'Error') #e5e7eb; color: #374151; @else #f9fafb; color: #6b7280; @endif">
-                                    <option value="" style="background-color:#f9fafb; color:#6b7280;">-</option>
+                                    <option value="" style="background-color:#f9fafb; color:#6b7280;">Select Quality</option>
                                     <option value="Good" {{ ($lead->website_quality ?? '') === 'Good' ? 'selected' : '' }} style="background-color:#d1fae5; color:#065f46;">Good</option>
                                     <option value="Average" {{ ($lead->website_quality ?? '') === 'Average' ? 'selected' : '' }} style="background-color:#fef3c7; color:#92400e;">Average</option>
                                     <option value="Bad" {{ ($lead->website_quality ?? '') === 'Bad' ? 'selected' : '' }} style="background-color:#fee2e2; color:#991b1b;">Bad</option>
                                     <option value="Error" {{ ($lead->website_quality ?? '') === 'Error' ? 'selected' : '' }} style="background-color:#e5e7eb; color:#374151;">Error</option>
                                 </select>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <select class="border rounded px-2 py-1 text-sm font-medium contact-select" data-id="{{ $lead->id }}" style="background-color: @if(($lead->contact_status ?? '') === 'Mail') #dbeafe; color: #1e40af; @elseif(($lead->contact_status ?? '') === 'WhatsApp') #d1fae5; color: #065f46; @elseif(($lead->contact_status ?? '') === 'SMS') #fef3c7; color: #92400e; @else #f9fafb; color: #6b7280; @endif">
-                                    <option value="" style="background-color:#f9fafb; color:#6b7280;">-</option>
+                                <select class="border rounded px-2 py-1 text-sm font-medium w-full contact-select" data-id="{{ $lead->id }}" style="background-color: @if(($lead->contact_status ?? '') === 'Mail') #dbeafe; color: #1e40af; @elseif(($lead->contact_status ?? '') === 'WhatsApp') #d1fae5; color: #065f46; @elseif(($lead->contact_status ?? '') === 'SMS') #fef3c7; color: #92400e; @else #f9fafb; color: #6b7280; @endif">
+                                    <option value="" style="background-color:#f9fafb; color:#6b7280;">Not Contact Yet</option>
                                     <option value="Mail" {{ ($lead->contact_status ?? '') === 'Mail' ? 'selected' : '' }} style="background-color:#dbeafe; color:#1e40af;">Mail</option>
                                     <option value="WhatsApp" {{ ($lead->contact_status ?? '') === 'WhatsApp' ? 'selected' : '' }} style="background-color:#d1fae5; color:#065f46;">WhatsApp</option>
                                     <option value="SMS" {{ ($lead->contact_status ?? '') === 'SMS' ? 'selected' : '' }} style="background-color:#fef3c7; color:#92400e;">SMS</option>
                                 </select>
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-sm note-cell">
                                 <textarea rows="2"
@@ -280,6 +295,25 @@ document.querySelectorAll('.email-input').forEach(function(input) {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({ email: email })
+            }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
+        }, 600);
+    });
+});
+
+let whatsappTimeouts = {};
+document.querySelectorAll('.whatsapp-input').forEach(function(input) {
+    input.addEventListener('input', function() {
+        var leadId = this.dataset.id;
+        var whatsapp = this.value;
+        clearTimeout(whatsappTimeouts[leadId]);
+        whatsappTimeouts[leadId] = setTimeout(function() {
+            fetch('/leads/' + leadId + '/whatsapp', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ whatsapp: whatsapp })
             }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
         }, 600);
     });

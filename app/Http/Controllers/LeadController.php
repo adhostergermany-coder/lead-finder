@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Lead;
 use App\Services\OsmService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LeadController extends Controller
 {
@@ -162,46 +164,69 @@ class LeadController extends Controller
 
     public function updateQuality(Lead $lead)
     {
-        $lead->update([
-            'website_quality' => request('website_quality'),
-        ]);
+        $old = $lead->website_quality;
+        $new = request('website_quality');
+        $lead->update(['website_quality' => $new]);
+
+        $this->log($lead, 'Website Quality', $old, $new);
 
         return response()->json(['success' => true]);
     }
 
     public function updateContact(Lead $lead)
     {
-        $lead->update([
-            'contact_status' => request('contact_status'),
-        ]);
+        $old = $lead->contact_status;
+        $new = request('contact_status');
+        $lead->update(['contact_status' => $new]);
+
+        $this->log($lead, 'Contact Status', $old, $new);
 
         return response()->json(['success' => true]);
     }
 
     public function updateNote(Lead $lead)
     {
-        $lead->update([
-            'note' => request('note'),
-        ]);
+        $old = $lead->note;
+        $new = request('note');
+        $lead->update(['note' => $new]);
+
+        $this->log($lead, 'Note', $old, $new);
 
         return response()->json(['success' => true]);
     }
 
     public function updateEmail(Lead $lead)
     {
-        $lead->update([
-            'email' => request('email'),
-        ]);
+        $old = $lead->email;
+        $new = request('email');
+        $lead->update(['email' => $new]);
+
+        $this->log($lead, 'Email', $old, $new);
 
         return response()->json(['success' => true]);
     }
 
     public function updateWhatsapp(Lead $lead)
     {
-        $lead->update([
-            'whatsapp' => request('whatsapp'),
-        ]);
+        $old = $lead->whatsapp;
+        $new = request('whatsapp');
+        $lead->update(['whatsapp' => $new]);
+
+        $this->log($lead, 'WhatsApp', $old, $new);
 
         return response()->json(['success' => true]);
+    }
+
+    private function log(Lead $lead, string $field, $oldValue, $newValue): void
+    {
+        if ($oldValue !== $newValue) {
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'lead_id' => $lead->id,
+                'field' => $field,
+                'old_value' => $oldValue ?: '(empty)',
+                'new_value' => $newValue ?: '(empty)',
+            ]);
+        }
     }
 }

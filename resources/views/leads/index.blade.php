@@ -135,12 +135,10 @@
                                     <span class="text-gray-400">-</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                @if($lead->email)
-                                    <a href="mailto:{{ $lead->email }}" class="text-indigo-600 hover:text-indigo-800 truncate block max-w-[200px]">{{ $lead->email }}</a>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
+                            <td class="px-6 py-4 whitespace-nowrap text-sm email-cell">
+                                <input type="email" value="{{ $lead->email }}" placeholder="Add email..."
+                                    class="email-input w-full border border-transparent hover:border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded px-2 py-1 text-sm bg-transparent focus:bg-white transition"
+                                    data-id="{{ $lead->id }}">
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 @if($lead->website)
@@ -231,6 +229,25 @@ document.querySelectorAll('.contact-select').forEach(function(select) {
             },
             body: JSON.stringify({ contact_status: status })
         }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
+    });
+});
+
+let emailTimeouts = {};
+document.querySelectorAll('.email-input').forEach(function(input) {
+    input.addEventListener('input', function() {
+        var leadId = this.dataset.id;
+        var email = this.value;
+        clearTimeout(emailTimeouts[leadId]);
+        emailTimeouts[leadId] = setTimeout(function() {
+            fetch('/leads/' + leadId + '/email', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ email: email })
+            }).then(function(r) { return r.json(); }).then(function(d) { console.log(d); });
+        }, 600);
     });
 });
 </script>

@@ -166,4 +166,12 @@ class LeadController extends Controller
         ]);
         return response()->json(['success' => true]);
     }
+
+    public function updateEmail(Lead $lead)
+    {
+        $lead->update([
+            'email' => request('email'),
+        ]);
+        return response()->json(['success' => true]);
+    }
 }

@@ -130,6 +130,11 @@
 </div>
 
 
+<style>
+.contact-mail-row { background-color: #eff6ff !important; box-shadow: inset 3px 0 0 #3b82f6; }
+.contact-whatsapp-row { background-color: #ecfdf5 !important; box-shadow: inset 3px 0 0 #10b981; }
+.contact-sms-row { background-color: #fffbeb !important; box-shadow: inset 3px 0 0 #f59e0b; }
+</style>
 <div class="bg-white rounded-lg shadow overflow-hidden mx-4">
     <div class="px-6 py-4 border-b border-gray-200">
         <h2 class="text-lg font-semibold text-gray-800">Leads (<?php echo e($leads->total()); ?> total)</h2>
@@ -150,7 +155,7 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     <?php $__currentLoopData = $leads; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $lead): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-gray-50 <?php if(($lead->contact_status ?? '') === 'Mail'): ?> contact-mail-row <?php elseif(($lead->contact_status ?? '') === 'WhatsApp'): ?> contact-whatsapp-row <?php elseif(($lead->contact_status ?? '') === 'SMS'): ?> contact-sms-row <?php endif; ?>">
                             <td class="px-6 py-4 w-96 align-top">
                                 <div class="text-sm font-semibold text-gray-900"><?php echo e($lead->company_name); ?></div>
                                 <div class="text-xs text-gray-500 mt-1 break-words"><?php echo e($lead->address ?: '-'); ?></div>
@@ -277,6 +282,15 @@ document.querySelectorAll('.contact-select').forEach(function(select) {
     select.addEventListener('change', function() {
         var leadId = this.dataset.id;
         var status = this.value;
+        var row = this.closest('tr');
+        row.classList.remove('contact-mail-row', 'contact-whatsapp-row', 'contact-sms-row');
+        if (status === 'Mail') {
+            row.classList.add('contact-mail-row');
+        } else if (status === 'WhatsApp') {
+            row.classList.add('contact-whatsapp-row');
+        } else if (status === 'SMS') {
+            row.classList.add('contact-sms-row');
+        }
         fetch('/leads/' + leadId + '/contact', {
             method: 'PUT',
             headers: {
